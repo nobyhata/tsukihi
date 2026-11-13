@@ -1,3 +1,8 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="claude:viewport-fit-sides" content="cover">
 <title>月日（つきひ）</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Inter:wght@400;500;600&display=swap">
@@ -111,8 +116,27 @@ p{margin:0 0 10px}
 .tab[aria-selected="true"]{color:var(--accent);font-weight:700}
 .banner{font-size:.7rem;color:var(--ink-soft);text-align:center;letter-spacing:.06em;padding:6px 0 12px}
 @media (prefers-reduced-motion:no-preference){.card{transition:border-color .2s}}
+
+.back{width:auto;padding:7px 12px;font-size:.78rem;font-weight:500;border-color:var(--line);color:var(--ink-soft);margin-bottom:12px}
+.prog{height:7px;border-radius:4px;background:var(--line);overflow:hidden;margin:10px 0 6px}
+.prog i{display:block;height:100%;background:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0 2px}
+.chip{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:7px 13px;font-family:inherit;font-size:.8rem;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+:root[data-theme="dark"] .chip[aria-pressed="true"],:root:not([data-theme="light"]) .chip[aria-pressed="true"]{color:#0d1418}
+.fieldlab{font-size:.82rem;font-weight:700;margin:14px 0 0}
+.fieldlab:first-of-type{margin-top:0}
+.drow{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)}
+.drow:last-child{border-bottom:0}
+.drow span{font-size:.83rem}
+.mini{display:grid;grid-template-columns:repeat(4,26px);gap:4px}
+.mini button{border:1px solid var(--line);background:transparent;color:var(--ink-soft);border-radius:7px;padding:5px 0;font-family:var(--font-num);font-size:.7rem;cursor:pointer}
+.mini button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+:root[data-theme="dark"] .mini button[aria-pressed="true"],:root:not([data-theme="light"]) .mini button[aria-pressed="true"]{color:#0d1418}
 </style>
 
+</head>
+<body>
 <div class="wrap">
   <div class="topbar">
     <h1>月日 <span style="font-weight:400;color:var(--ink-soft);font-size:.8rem">つきひ</span></h1>
@@ -174,6 +198,15 @@ p{margin:0 0 10px}
       <div class="rowline"><span>月経開始後3日以内に軽くなった周期</span><span>2周期中2周期</span></div>
       <p class="muted" style="margin:12px 0 0">つらい日が月経の前に寄っていて、始まると軽くなる。この形は、医師が最初に確かめることの一つです。ただし、これだけで診断はつきません。</p>
     </div>
+
+    <div class="card">
+      <h3>続き具合</h3>
+      <div class="rowline"><span>はじめてからの日数</span><span>57日</span></div>
+      <div class="rowline"><span>記録した日</span><span>23日（40%）</span></div>
+      <div class="rowline"><span>いちばん長く空いた期間</span><span>9日</span></div>
+      <div class="rowline"><span>夜に腕時計をつけていた日</span><span>41日（72%）</span></div>
+      <p class="muted" style="margin:12px 0 0">抜けた日があっても構いません。どれだけ続いたか、どこが抜けたかも、この仕組みが確かめようとしていることの一部です。続かない月があることを前提に作ってあります。</p>
+    </div>
   </section>
 
   <!-- 受診の準備 -->
@@ -199,8 +232,95 @@ p{margin:0 0 10px}
       <button class="btn ghost" style="margin-top:12px" id="drspBtn">毎日の記録に切り替える</button>
     </div>
 
+    <div class="card">
+      <h3>受診したあとに</h3>
+      <p class="muted" style="margin:0">受診したら、何と言われたかを教えてください。30秒です。答えると、次にどう記録すればよいかが変わります。</p>
+      <button class="btn ghost" style="margin-top:12px" id="afterBtn">受診した結果を記録する</button>
+    </div>
+
     <div class="note">
       つらさが強いときや、気持ちが落ち込んで戻らないときは、記録を待たずに相談してください。相談先の一覧をここに置きます。<span class="muted">（試作のため、実際の連絡先は入れていません）</span>
+    </div>
+  </section>
+
+  <!-- 毎日の記録（二段目） -->
+  <section id="v-daily" hidden>
+    <button class="btn ghost back" data-back="visit">受診の準備へ戻る</button>
+    <div class="card">
+      <h2>毎日の記録</h2>
+      <p class="muted">受診が決まったので、診断に使う形に切り替えました。DRSPという様式で、2周期ぶん、毎日つけます。項目は増えますが、1日1分です。</p>
+      <div class="prog"><i id="drspBar" style="width:21%"></i></div>
+      <div class="rowline"><span>そろった日数</span><span id="drspN">12日 / 56日</span></div>
+      <p class="muted" style="margin:10px 0 0">2周期（56日）そろうと、医師が診断に使えます。いまは21%です。</p>
+    </div>
+
+    <div class="card">
+      <h3>今日の症状　0 なし / 1 少し / 2 中くらい / 3 強い</h3>
+      <div id="drspSym"></div>
+    </div>
+
+    <div class="card">
+      <h3>生活への影響</h3>
+      <div id="drspLife"></div>
+    </div>
+
+    <button class="btn" id="drspSave">今日のぶんを保存</button>
+    <p class="muted" id="drspMsg" style="margin:8px 0 0" hidden></p>
+
+    <div class="note" style="margin-top:12px">
+      <b>いつでも戻せます。</b> 毎日の記録が続かないときは、つらい日だけの記録に戻してください。戻しても、ここまでの記録は消えません。
+      <button class="btn ghost back" data-back="home" style="margin-top:10px">つらい日だけに戻す</button>
+    </div>
+  </section>
+
+  <!-- 受診のあと -->
+  <section id="v-after" hidden>
+    <button class="btn ghost back" data-back="visit">受診の準備へ戻る</button>
+    <div class="card">
+      <h2>受診のあとを教えてください</h2>
+      <p class="muted">選ぶだけです。あとから直せます。</p>
+
+      <p class="fieldlab">行ったところ</p>
+      <div class="chips" data-group="place">
+        <button class="chip" aria-pressed="false">婦人科</button>
+        <button class="chip" aria-pressed="false">心療内科・精神科</button>
+        <button class="chip" aria-pressed="false">内科</button>
+        <button class="chip" aria-pressed="false">まだ行っていない</button>
+      </div>
+
+      <p class="fieldlab">言われたこと</p>
+      <div class="chips" data-group="dx">
+        <button class="chip" aria-pressed="false">月経前症候群（PMS）</button>
+        <button class="chip" aria-pressed="false">月経前不快気分障害（PMDD）</button>
+        <button class="chip" aria-pressed="false">月経困難症</button>
+        <button class="chip" aria-pressed="false">ほかの診断</button>
+        <button class="chip" aria-pressed="false">診断はつかなかった</button>
+        <button class="chip" aria-pressed="false">しばらく様子を見る</button>
+      </div>
+
+      <p class="fieldlab">出た薬</p>
+      <div class="chips" data-group="rx">
+        <button class="chip" aria-pressed="false">低用量ピル</button>
+        <button class="chip" aria-pressed="false">漢方</button>
+        <button class="chip" aria-pressed="false">抗うつ薬</button>
+        <button class="chip" aria-pressed="false">鎮痛薬</button>
+        <button class="chip" aria-pressed="false">なし</button>
+      </div>
+
+      <p class="fieldlab">次の予約</p>
+      <div class="chips" data-group="next">
+        <button class="chip" aria-pressed="false">とった</button>
+        <button class="chip" aria-pressed="false">とっていない</button>
+      </div>
+
+      <button class="btn" id="afterSave" style="margin-top:16px">保存する</button>
+      <div id="afterRes" hidden style="margin-top:14px">
+        <div class="note" style="margin:0"><b id="afterTitle"></b><p style="margin:6px 0 0" id="afterBody"></p></div>
+      </div>
+    </div>
+
+    <div class="note">
+      <b>なぜ聞くのか。</b> 記録を見せたあとに何が起きたかは、いまどこにも残っていません。受診につながったのか、何と診断されたのかが分かって初めて、この記録に意味があったと言えます。答えは個人が分からない形でまとめ、記録の作り方を直すために使います。答えなくても、アプリはそのまま使えます。
     </div>
   </section>
 
@@ -236,13 +356,18 @@ p{margin:0 0 10px}
 <script>
 (function(){
   var views={home:document.getElementById('v-home'),look:document.getElementById('v-look'),
-             visit:document.getElementById('v-visit'),check:document.getElementById('v-check')};
+             visit:document.getElementById('v-visit'),check:document.getElementById('v-check'),
+             daily:document.getElementById('v-daily'),after:document.getElementById('v-after')};
+  var tabOf={home:'home',look:'look',visit:'visit',check:'check',daily:'visit',after:'visit'};
   var tabs=[].slice.call(document.querySelectorAll('.tab'));
   function show(name){
     Object.keys(views).forEach(function(k){views[k].hidden=(k!==name);});
-    tabs.forEach(function(t){t.setAttribute('aria-selected',String(t.dataset.v===name));});
+    tabs.forEach(function(t){t.setAttribute('aria-selected',String(t.dataset.v===tabOf[name]));});
     window.scrollTo(0,0);
   }
+  [].slice.call(document.querySelectorAll('.back')).forEach(function(b){
+    b.addEventListener('click',function(){show(b.dataset.back);});
+  });
   tabs.forEach(function(t){t.addEventListener('click',function(){show(t.dataset.v);});});
 
   // 今日の一タップ
@@ -287,13 +412,75 @@ p{margin:0 0 10px}
         function(){done('コピーできませんでした。画面をそのまま見せてください。');});
     }catch(e){done('コピーできませんでした。画面をそのまま見せてください。');}
   });
-  document.getElementById('drspBtn').addEventListener('click',function(){
-    alertless('毎日の記録に切り替えました。（試作のため、画面は作っていません）');
-  });
-  function alertless(t){
-    var n=document.getElementById('drspBtn');
-    n.textContent=t; n.disabled=true; n.style.opacity=.7;
+  document.getElementById('drspBtn').addEventListener('click',function(){show('daily');});
+  document.getElementById('afterBtn').addEventListener('click',function(){show('after');});
+
+  // 毎日の記録（DRSPの形）
+  var symItems=['気分が沈む、希望がもてない','不安や緊張がある','涙もろい、ささいなことで傷つく',
+    'いらだつ、怒りっぽい','ふだん楽しめることに興味がわかない','集中しにくい',
+    '疲れやすい、気力がわかない','食欲が変わる、食べたくなるものがある','眠れない、または眠りすぎる',
+    '手に負えない、自分を保てない感じがする','乳房の張り、頭痛、関節痛、むくみ'];
+  var lifeItems=['仕事や学校の能率が落ちた','人づきあいを避けた、もめた','家でのことが手につかなかった'];
+  function scaleRow(host,items){
+    items.forEach(function(t){
+      var row=document.createElement('div'); row.className='drow';
+      var lab=document.createElement('span'); lab.textContent=t; row.appendChild(lab);
+      var m=document.createElement('div'); m.className='mini';
+      ['0','1','2','3'].forEach(function(v){
+        var b=document.createElement('button'); b.type='button'; b.textContent=v;
+        b.setAttribute('aria-pressed','false');
+        b.addEventListener('click',function(){
+          [].slice.call(m.children).forEach(function(o){o.setAttribute('aria-pressed',String(o===b));});
+        });
+        m.appendChild(b);
+      });
+      row.appendChild(m); host.appendChild(row);
+    });
   }
+  scaleRow(document.getElementById('drspSym'),symItems);
+  scaleRow(document.getElementById('drspLife'),lifeItems);
+  var drspDays=12;
+  document.getElementById('drspSave').addEventListener('click',function(){
+    drspDays+=1;
+    document.getElementById('drspN').textContent=drspDays+'日 / 56日';
+    document.getElementById('drspBar').style.width=Math.round(drspDays/56*100)+'%';
+    var m=document.getElementById('drspMsg');
+    m.hidden=false; m.textContent='今日のぶんを保存しました。あと'+(56-drspDays)+'日です。';
+  });
+
+  // 受診のあと
+  var picked={};
+  [].slice.call(document.querySelectorAll('.chips')).forEach(function(g){
+    var bs=[].slice.call(g.children);
+    bs.forEach(function(b){
+      b.addEventListener('click',function(){
+        bs.forEach(function(o){o.setAttribute('aria-pressed',String(o===b));});
+        picked[g.dataset.group]=b.textContent;
+      });
+    });
+  });
+  document.getElementById('afterSave').addEventListener('click',function(){
+    var box=document.getElementById('afterRes');
+    var t=document.getElementById('afterTitle'), b=document.getElementById('afterBody');
+    box.hidden=false;
+    var dx=picked.dx||'', place=picked.place||'';
+    if(place==='まだ行っていない'||!place){
+      t.textContent='受診する前の状態として残しました。';
+      b.textContent='行けたときに、また教えてください。それまでは、つらかった日だけの記録を続けてください。';
+    }else if(dx.indexOf('PMDD')>=0){
+      t.textContent='毎日の記録に切り替えましょう。';
+      b.textContent='PMDDの診断を確かめるには、2周期ぶんの毎日の記録（DRSP）が要ります。受診の準備から切り替えてください。';
+    }else if(dx.indexOf('月経困難症')>=0){
+      t.textContent='治療が始まりました。';
+      b.textContent='薬が効いているかどうかは、つらい日の位置と日数で見えます。これまでどおりの記録を続けて、次の受診で見せてください。';
+    }else if(dx.indexOf('診断はつかなかった')>=0||dx.indexOf('様子')>=0){
+      t.textContent='記録を続けてください。';
+      b.textContent='1回の受診で決まらないことは珍しくありません。周期が2つ分そろうと、話が具体的になります。';
+    }else{
+      t.textContent='記録しました。';
+      b.textContent='これまでどおり、つらかった日だけの記録を続けてください。';
+    }
+  });
 
   // 1分の確認（4問）
   var items=['気分が沈む、涙もろくなる','いらだつ、怒りっぽくなる','仕事や学校、家事がいつもどおりにできない','人との約束や予定を変えた'];
@@ -336,3 +523,5 @@ p{margin:0 0 10px}
   });
 })();
 </script>
+</body>
+</html>
