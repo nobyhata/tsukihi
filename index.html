@@ -1,0 +1,338 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>月日（つきひ）</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* layout: single phone column, fixed bottom tab bar, one view at a time */
+:root{
+  --paper:#f3f5f7; --card:#ffffff; --ink:#16202a; --ink-soft:#5a6b7a;
+  --line:#dde3e9; --accent:#2f6f6b; --accent-soft:#e3efee;
+  --warm:#b4791f; --warm-soft:#f7eedd;
+  --lv0:#cfd8e0; --lv1:#9fc3bf; --lv2:#2f6f6b;
+  --font-ja:"Zen Kaku Gothic New","Hiragino Sans","Noto Sans JP",sans-serif;
+  --font-num:"Inter",system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#11171d; --card:#1a222b; --ink:#e9eef3; --ink-soft:#98a8b6;
+  --line:#2c3844; --accent:#6fb5ae; --accent-soft:#1d2e2d;
+  --warm:#d9a94a; --warm-soft:#2a2316;
+  --lv0:#38444f; --lv1:#4e7d79; --lv2:#6fb5ae;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --paper:#11171d; --card:#1a222b; --ink:#e9eef3; --ink-soft:#98a8b6;
+  --line:#2c3844; --accent:#6fb5ae; --accent-soft:#1d2e2d;
+  --warm:#d9a94a; --warm-soft:#2a2316;
+  --lv0:#38444f; --lv1:#4e7d79; --lv2:#6fb5ae;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:var(--font-ja); line-height:1.65;
+  margin:0; padding-bottom:84px;
+}
+.wrap{
+  max-width:430px; margin:0 auto;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:18px 8px;
+}
+h1{font-size:1.02rem;font-weight:700;letter-spacing:.04em;margin:0}
+h2{font-size:1.06rem;font-weight:700;margin:0 0 6px;text-wrap:balance}
+h3{font-size:.86rem;font-weight:700;margin:0 0 6px;letter-spacing:.03em}
+p{margin:0 0 10px}
+.topbar{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:14px}
+.topbar .sub{font-size:.72rem;color:var(--ink-soft);letter-spacing:.06em}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+.muted{color:var(--ink-soft);font-size:.8rem}
+.num{font-family:var(--font-num);font-variant-numeric:tabular-nums}
+
+.daynum{display:flex;align-items:baseline;gap:8px;margin-bottom:2px}
+.daynum b{font-family:var(--font-num);font-size:2.6rem;font-weight:600;line-height:1;letter-spacing:-.02em}
+
+.choices{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}
+.choice{
+  border:1px solid var(--line);background:transparent;color:var(--ink);
+  border-radius:12px;padding:12px 6px;font-family:inherit;font-size:.82rem;
+  cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:7px;
+}
+.choice:hover{border-color:var(--accent)}
+.choice[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);font-weight:700}
+.dot{width:14px;height:14px;border-radius:50%}
+.d0{background:var(--lv0)} .d1{background:var(--lv1)} .d2{background:var(--lv2)}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  border-radius:11px;border:1px solid var(--accent);background:var(--accent);
+  color:#fff;font-family:inherit;font-size:.86rem;font-weight:700;
+  padding:11px 16px;cursor:pointer;width:100%;
+}
+:root[data-theme="dark"] .btn, :root:not([data-theme="light"]) .btn{color:#0d1418}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn:focus-visible,.choice:focus-visible,.tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.rowline{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:.85rem}
+.rowline:last-child{border-bottom:0}
+.rowline span:last-child{font-family:var(--font-num);font-variant-numeric:tabular-nums;font-weight:600}
+
+.note{background:var(--warm-soft);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:.79rem;color:var(--ink);margin-bottom:12px}
+.note b{color:var(--warm)}
+
+.strip{display:grid;grid-template-columns:repeat(29,1fr);gap:2px;margin:8px 0 4px}
+.cell{aspect-ratio:1/1.5;border-radius:2px;background:var(--lv0);opacity:.45}
+.cell.l1{background:var(--lv1);opacity:1} .cell.l2{background:var(--lv2);opacity:1}
+.cell.blank{background:transparent}
+.axis{display:flex;justify-content:space-between;font-size:.66rem;color:var(--ink-soft);font-family:var(--font-num)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.74rem;color:var(--ink-soft);margin-top:10px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:middle}
+
+.q{border-bottom:1px solid var(--line);padding:12px 0}
+.q:last-of-type{border-bottom:0}
+.q p{font-size:.88rem;margin:0 0 8px}
+.scale{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.scale button{
+  border:1px solid var(--line);background:transparent;color:var(--ink-soft);
+  border-radius:9px;padding:8px 2px;font-family:inherit;font-size:.72rem;cursor:pointer;
+}
+.scale button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+:root[data-theme="dark"] .scale button[aria-pressed="true"]{color:#0d1418}
+
+.tabs{
+  position:fixed;left:0;right:0;bottom:0;z-index:10;
+  background:var(--card);border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  padding-left:max(0px,env(safe-area-inset-left,0px));
+  padding-right:max(0px,env(safe-area-inset-right,0px));
+}
+.tabs-inner{max-width:430px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.tab{background:none;border:0;padding:11px 4px 13px;font-family:inherit;font-size:.72rem;color:var(--ink-soft);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
+.tab svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.tab[aria-selected="true"]{color:var(--accent);font-weight:700}
+.banner{font-size:.7rem;color:var(--ink-soft);text-align:center;letter-spacing:.06em;padding:6px 0 12px}
+@media (prefers-reduced-motion:no-preference){.card{transition:border-color .2s}}
+</style>
+
+<div class="wrap">
+  <div class="topbar">
+    <h1>月日 <span style="font-weight:400;color:var(--ink-soft);font-size:.8rem">つきひ</span></h1>
+    <span class="sub">試作・2026年11月13日</span>
+  </div>
+
+  <!-- ホーム -->
+  <section id="v-home">
+    <div class="card">
+      <div class="daynum"><b class="num" id="dayN">26</b><span class="muted">日目（前回の月経開始から）</span></div>
+      <p class="muted" style="margin:0">記録は、つけたい日だけで大丈夫です。</p>
+      <div class="choices" role="group" aria-label="今日の調子">
+        <button class="choice" data-lv="0" aria-pressed="false"><span class="dot d0"></span>いつもどおり</button>
+        <button class="choice" data-lv="1" aria-pressed="false"><span class="dot d1"></span>少しつらい</button>
+        <button class="choice" data-lv="2" aria-pressed="false"><span class="dot d2"></span>つらい</button>
+      </div>
+      <p class="muted" id="homeMsg" style="margin:12px 0 0">今日はまだ記録していません。</p>
+    </div>
+
+    <div class="card">
+      <h3>月経</h3>
+      <p class="muted" style="margin:0 0 12px">記録するのは開始日だけです。</p>
+      <button class="btn ghost" id="startBtn">今日から始まった</button>
+    </div>
+
+    <div class="note">
+      <b>このアプリがしないこと。</b> 症状や記録から、PMSやPMDDかどうかを判定しません。記録は、自分で振り返るためと、受診したときに医師に見せるためのものです。
+    </div>
+  </section>
+
+  <!-- ふりかえり -->
+  <section id="v-look" hidden>
+    <div class="card">
+      <h2>つらかった日は、いつに寄っていましたか</h2>
+      <p class="muted">月経開始日を1日目として、2周期を重ねています。これは例として入れてある記録です。</p>
+
+      <div style="margin-top:14px">
+        <h3>前々周期　9月20日から（29日）</h3>
+        <div class="strip" id="s1"></div>
+        <div class="axis"><span>1日目</span><span>15</span><span>29</span></div>
+      </div>
+      <div style="margin-top:16px">
+        <h3>前周期　10月19日から（28日）</h3>
+        <div class="strip" id="s2"></div>
+        <div class="axis"><span>1日目</span><span>15</span><span>28</span></div>
+      </div>
+      <div class="legend">
+        <span><i class="d0" style="opacity:.45"></i>記録なし・いつもどおり</span>
+        <span><i class="d1"></i>少しつらい</span>
+        <span><i class="d2"></i>つらい</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>この2周期でわかること</h3>
+      <div class="rowline"><span>記録した日</span><span>23日</span></div>
+      <div class="rowline"><span>「つらい」とつけた日</span><span>9日</span></div>
+      <div class="rowline"><span>うち、月経開始前の7日間</span><span>7日</span></div>
+      <div class="rowline"><span>月経開始後3日以内に軽くなった周期</span><span>2周期中2周期</span></div>
+      <p class="muted" style="margin:12px 0 0">つらい日が月経の前に寄っていて、始まると軽くなる。この形は、医師が最初に確かめることの一つです。ただし、これだけで診断はつきません。</p>
+    </div>
+  </section>
+
+  <!-- 受診の準備 -->
+  <section id="v-visit" hidden>
+    <div class="card">
+      <h2>医師に見せる1枚</h2>
+      <p class="muted">そのまま画面を見せても、書き写しても構いません。</p>
+      <div style="margin-top:12px">
+        <div class="rowline"><span>記録した期間</span><span>9/20 – 11/13</span></div>
+        <div class="rowline"><span>周期の長さ</span><span>29日・28日</span></div>
+        <div class="rowline"><span>つらい日の位置</span><span>開始前7日に集中</span></div>
+        <div class="rowline"><span>月経開始後の変化</span><span>3日以内に軽快</span></div>
+        <div class="rowline"><span>生活への影響</span><span>欠勤1日・予定変更4日</span></div>
+        <div class="rowline"><span>市販薬</span><span>2周期で11日</span></div>
+      </div>
+      <button class="btn" id="copyBtn" style="margin-top:14px">この1枚をコピー</button>
+      <p class="muted" id="copyMsg" style="margin:8px 0 0" hidden></p>
+    </div>
+
+    <div class="card">
+      <h3>診断に進むとき、医師が見るもの</h3>
+      <p class="muted" style="margin:0">PMDDの診断には、毎日の記録を2周期分そろえることになっています（DRSP）。ここまでの記録は、その前段階として、受診するかどうかを決めるためのものです。受診が決まったら、毎日の記録に切り替えます。</p>
+      <button class="btn ghost" style="margin-top:12px" id="drspBtn">毎日の記録に切り替える</button>
+    </div>
+
+    <div class="note">
+      つらさが強いときや、気持ちが落ち込んで戻らないときは、記録を待たずに相談してください。相談先の一覧をここに置きます。<span class="muted">（試作のため、実際の連絡先は入れていません）</span>
+    </div>
+  </section>
+
+  <!-- 1分チェック -->
+  <section id="v-check" hidden>
+    <div class="card">
+      <h2>1分の確認</h2>
+      <p class="muted">月経前の1〜2週間に、どのくらい当てはまりましたか。4問だけです。答えなくても、アプリは使えます。</p>
+      <div id="qs"></div>
+      <button class="btn" id="calcBtn" style="margin-top:14px">結果を見る</button>
+      <div id="result" hidden style="margin-top:14px">
+        <div class="note" style="margin:0">
+          <b id="resTitle">相談を考えてよい水準です。</b>
+          <p style="margin:6px 0 0" id="resBody"></p>
+        </div>
+        <p class="muted" style="margin:10px 0 0">この種の質問票は、当てはまる人を広く拾う代わりに、当てはまらない人も多く拾います。報告されている感度は79%、特異度は33%です。だから、これは診断ではなく、記録に進むかどうかの入口として使います。</p>
+      </div>
+    </div>
+  </section>
+
+  <p class="banner">これは試作です。実際の診断・治療には使えません。</p>
+</div>
+
+<nav class="tabs">
+  <div class="tabs-inner" role="tablist" aria-label="画面">
+    <button class="tab" role="tab" aria-selected="true" data-v="home"><svg viewBox="0 0 24 24"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10.5V20h12v-9.5"/></svg>ホーム</button>
+    <button class="tab" role="tab" aria-selected="false" data-v="look"><svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 15l3.5-5L15 13l4-6"/></svg>ふりかえり</button>
+    <button class="tab" role="tab" aria-selected="false" data-v="visit"><svg viewBox="0 0 24 24"><path d="M7 3h10l2 3v15H5V6z"/><path d="M9 11h6"/><path d="M9 15h4"/></svg>受診の準備</button>
+    <button class="tab" role="tab" aria-selected="false" data-v="check"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 2"/></svg>1分の確認</button>
+  </div>
+</nav>
+
+<script>
+(function(){
+  var views={home:document.getElementById('v-home'),look:document.getElementById('v-look'),
+             visit:document.getElementById('v-visit'),check:document.getElementById('v-check')};
+  var tabs=[].slice.call(document.querySelectorAll('.tab'));
+  function show(name){
+    Object.keys(views).forEach(function(k){views[k].hidden=(k!==name);});
+    tabs.forEach(function(t){t.setAttribute('aria-selected',String(t.dataset.v===name));});
+    window.scrollTo(0,0);
+  }
+  tabs.forEach(function(t){t.addEventListener('click',function(){show(t.dataset.v);});});
+
+  // 今日の一タップ
+  var choices=[].slice.call(document.querySelectorAll('.choice'));
+  var msg=document.getElementById('homeMsg');
+  var words={'0':'いつもどおり、と記録しました。','1':'少しつらい、と記録しました。','2':'つらい、と記録しました。'};
+  choices.forEach(function(c){
+    c.addEventListener('click',function(){
+      choices.forEach(function(o){o.setAttribute('aria-pressed',String(o===c));});
+      msg.textContent=words[c.dataset.lv]+'　変えたいときは、もう一度押してください。';
+    });
+  });
+  document.getElementById('startBtn').addEventListener('click',function(){
+    document.getElementById('dayN').textContent='1';
+    msg.textContent='月経の開始日を今日として、数え直しました。';
+    show('home');
+  });
+
+  // 2周期ぶんの例データ（1日目＝月経開始日）
+  var c1=[2,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,2,2,2,1,0,0];
+  var c2=[2,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,2,2,2,2,1,0];
+  function strip(el,arr,total){
+    var h='';
+    for(var i=0;i<total;i++){
+      var v=arr[i];
+      h+='<div class="cell '+(v===2?'l2':v===1?'l1':'')+'" title="'+(i+1)+'日目"></div>';
+    }
+    el.innerHTML=h;
+  }
+  strip(document.getElementById('s1'),c1,29);
+  strip(document.getElementById('s2'),c2,29);
+
+  // コピー
+  var summary=['記録した期間：2026/9/20–11/13','周期の長さ：29日・28日',
+    'つらい日の位置：月経開始前7日に集中','月経開始後の変化：3日以内に軽快',
+    '生活への影響：欠勤1日・予定変更4日','市販薬：2周期で11日'].join('\n');
+  var copyMsg=document.getElementById('copyMsg');
+  document.getElementById('copyBtn').addEventListener('click',function(){
+    function done(t){copyMsg.hidden=false;copyMsg.textContent=t;}
+    try{
+      navigator.clipboard.writeText(summary).then(function(){done('コピーしました。');},
+        function(){done('コピーできませんでした。画面をそのまま見せてください。');});
+    }catch(e){done('コピーできませんでした。画面をそのまま見せてください。');}
+  });
+  document.getElementById('drspBtn').addEventListener('click',function(){
+    alertless('毎日の記録に切り替えました。（試作のため、画面は作っていません）');
+  });
+  function alertless(t){
+    var n=document.getElementById('drspBtn');
+    n.textContent=t; n.disabled=true; n.style.opacity=.7;
+  }
+
+  // 1分の確認（4問）
+  var items=['気分が沈む、涙もろくなる','いらだつ、怒りっぽくなる','仕事や学校、家事がいつもどおりにできない','人との約束や予定を変えた'];
+  var labels=['ない','少し','中くらい','強い'];
+  var answers=[null,null,null,null];
+  var qs=document.getElementById('qs');
+  items.forEach(function(t,qi){
+    var d=document.createElement('div'); d.className='q';
+    var p=document.createElement('p'); p.textContent=(qi+1)+'. '+t; d.appendChild(p);
+    var s=document.createElement('div'); s.className='scale';
+    labels.forEach(function(l,li){
+      var b=document.createElement('button'); b.type='button'; b.textContent=l;
+      b.setAttribute('aria-pressed','false');
+      b.addEventListener('click',function(){
+        answers[qi]=li;
+        [].slice.call(s.children).forEach(function(o){o.setAttribute('aria-pressed',String(o===b));});
+      });
+      s.appendChild(b);
+    });
+    d.appendChild(s); qs.appendChild(d);
+  });
+  document.getElementById('calcBtn').addEventListener('click',function(){
+    var done=answers.every(function(a){return a!==null;});
+    var box=document.getElementById('result');
+    var rt=document.getElementById('resTitle'), rb=document.getElementById('resBody');
+    box.hidden=false;
+    if(!done){ rt.textContent='まだ空いている問いがあります。'; rb.textContent='4問とも選んでから、もう一度押してください。'; return; }
+    var sum=answers.reduce(function(a,b){return a+b;},0);
+    var life=Math.max(answers[2],answers[3]);
+    if(sum>=6&&life>=2){
+      rt.textContent='記録に進んでみてください。';
+      rb.textContent='症状があり、生活にも影響が出ています。1〜2周期ぶん、つらかった日だけ記録してから、婦人科か心療内科で見せると話が早く進みます。';
+    }else if(sum>=3){
+      rt.textContent='しばらく記録してみてください。';
+      rb.textContent='つらい日が月経の前に寄っているかどうかは、1周期ぶんの記録で見えてきます。無理のない範囲で、つらかった日だけつけてください。';
+    }else{
+      rt.textContent='いまのところ、記録を急ぐ理由は見当たりません。';
+      rb.textContent='気になる月があれば、その周期だけ記録してみてください。';
+    }
+  });
+})();
+</script>
